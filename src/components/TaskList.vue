@@ -1,22 +1,39 @@
 <template>
   <ul class="todo-list">
-    
-    <li v-for="todo in todoList" class="todo">
-      <div class="view">
-        <label>{{ todo.title }}</label>
-      </div>
+    <li v-for="(todo, index) in sortedTasks" class="task" :key="index">
+      <input class="toggle" @click="completeTask(todo)" type="checkbox" />
+      <label v-if="todo.completed" class="todo-completed">{{todo.title}}</label>
+      <label v-else>{{todo.title}}</label>
     </li>
-    
   </ul>
 </template>
 
 <script>
 export default {
   props: ["todoList"],
-}
+  computed: {
+    sortedTasks: function () {
+      let sorted = this.todoList.slice();
+      return sorted.sort(function (a, b) {
+        if (a.title < b.title) return -1;
+        if (a.title > b.title) return 1;
+        return 0;
+      });
+    },
+  },
+  methods: {
+	  completeTask(task) {
+		task.completed = !task.completed;
+	  }
+  }
+};
 </script>
 
 <style>
+.task:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
 .todo-list {
 	margin: 0;
 	padding: 0;
@@ -49,6 +66,7 @@ export default {
 .todo-list li .toggle {
 	text-align: center;
 	width: 40px;
+	height: 40px;
 	/* auto, since non-WebKit browsers doesn't support input styling */
 	height: auto;
 	position: absolute;
@@ -58,12 +76,17 @@ export default {
 	border: none; /* Mobile Safari */
 	-webkit-appearance: none;
 	appearance: none;
+	display: table-cell;
+    vertical-align: middle
 }
 .todo-list li .toggle:after {
-	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#ededed" stroke-width="3"/></svg>');
+	opacity: 0.2;
+	content: url('../assets/yes_check.svg');
+	
 }
 .todo-list li .toggle:checked:after {
-	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
+	opacity: unset;
+	content: url('../assets/yes_check.svg');
 }
 .todo-list li label {
 	word-break: break-all;
@@ -106,23 +129,19 @@ export default {
 .todo-list li.editing:last-child {
 	margin-bottom: -1px;
 }
-/*
-	Hack to remove background from Mobile Safari.
-	Can't use it globally since it destroys checkboxes in Firefox
-*/
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-	.toggle-all,
-	.todo-list li .toggle {
-		background: none;
-	}
-	.todo-list li .toggle {
-		height: 40px;
-	}
-	.toggle-all {
-		-webkit-transform: rotate(90deg);
-		transform: rotate(90deg);
-		-webkit-appearance: none;
-		appearance: none;
-	}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .toggle-all,
+  .todo-list li .toggle {
+    background: none;
+  }
+  .todo-list li .toggle {
+    padding: 20px 0px 0px 10px;
+  }
+  .toggle-all {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 </style>

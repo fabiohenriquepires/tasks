@@ -1,10 +1,10 @@
 <template>
-    <div class="form" >
+    <form @submit.prevent>
         <input 
             class="new-todo" 
             @keyup.enter="addTask"
             placeholder="O que precisa ser feito?"/>
-    </div>
+    </form>
 </template>
 
 <script>
@@ -22,13 +22,19 @@ export default {
             let task = new Task()
             task.completed = false
             task.title = value
-            console.log(task);
+			this.$emit('newTask', task)
+			$event.target.value = '';
         } 
     }
 }
 </script>
 
 <style>
+
+
+form:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
 
 .todoapp input::-webkit-input-placeholder {
 	font-style: italic;
